@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -38,8 +39,10 @@ func getConfig() (*config, error) {
 	}
 
 	out := &config{}
-	if err := json.Unmarshal(result.Payload.Data, out); err != nil {
-		return nil, fmt.Errorf("failed to unmarshall config: %w", err)
+	decoder := json.NewDecoder(bytes.NewReader(result.Payload.Data))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(out); err != nil {
+		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}
 
 	return out, nil
