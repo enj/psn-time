@@ -7,6 +7,15 @@ import (
 	"os"
 )
 
+// loading config at startup once is fine for now
+var appConfig = func() *config {
+	c, err := getConfig()
+	if err != nil {
+		panic(err)
+	}
+	return c
+}()
+
 func main() {
 	http.HandleFunc("/", indexHandler)
 
@@ -27,5 +36,5 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	fmt.Fprint(w, "Hello, World!")
+	fmt.Fprint(w, "Hello, World!", string(appConfig.AllowedHostname[0]))
 }
